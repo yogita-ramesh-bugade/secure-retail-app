@@ -1,0 +1,19 @@
+FROM python:3.11-slim
+
+# Install bash and dependencies
+RUN apt-get update && \
+    apt-get install -y bash curl unzip git default-jre && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install Syft (SBOM)
+RUN curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh
+
+# Set working directory
+WORKDIR /app
+
+# Copy scan script
+COPY ci/scripts/scan.sh ./ci/scripts/scan.sh
+RUN chmod +x ./ci/scripts/scan.sh
+
+# Run the scan script by default
+CMD ["bash", "./ci/scripts/scan.sh"]
